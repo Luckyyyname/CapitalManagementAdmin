@@ -6,6 +6,7 @@ import Login from '../views/Login.vue'
 import Home from '../views/Home.vue'
 import InfoShow from '../views/InfoShow.vue'
 import FundList from '../views/FundList.vue'
+import FundStatistics from '../views/FundStatistics.vue'
 
 const routes = [
   {
@@ -21,6 +22,7 @@ const routes = [
       { path: 'home', name: 'home', component: Home },
       { path: 'infoshow', name: 'infoshow', component: InfoShow },
       { path: 'fundlist', name: 'fundlist', component: FundList },
+      { path: 'fundstatistics', name: 'fundstatistics', component: FundStatistics },
     ],
   },
   {

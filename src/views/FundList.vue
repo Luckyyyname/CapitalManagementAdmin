@@ -43,10 +43,10 @@
           <span>{{ scope.$index+(paginations.data.page_index - 1) * paginations.data.page_size + 1 }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="date" label="创建时间" align="center" width="150">
+      <el-table-column prop="date" label="创建时间" align="center" width="175">
         <template v-slot="scope">
           <i class="el-icon-time"></i>
-          <span style="margin-left: 10px">{{ scope.row.date }}</span>
+          <span style="margin-left: 10px">{{ formatDate(scope.row.date) }}</span>
         </template>
       </el-table-column>
       <el-table-column prop="type" label="收支类型" align="center" width="120">
@@ -202,6 +202,12 @@ const getTableData = () => {
     //设置分页数据
     setPaginations();
   });
+};
+
+const formatDate = (time) => {
+  let date = new Date(new Date(time).getTime() + 8 * 3600 * 1000).toJSON();
+  date = date.substring(0, 19).replace("T", " ");
+  return date;
 };
 
 // 搜索

@@ -22,7 +22,7 @@
         </template>
         <el-menu-item-group title="Group One">
           <el-menu-item index="/index/fundlist">资金流水</el-menu-item>
-          <el-menu-item index="/test2">收支统计</el-menu-item>
+          <el-menu-item index="/index/fundstatistics">收支统计</el-menu-item>
         </el-menu-item-group>
       </el-sub-menu>
       <el-sub-menu index="2">
@@ -32,7 +32,7 @@
         </template>
         <el-menu-item-group title="Group One">
           <el-menu-item index="/index/infoshow">个人信息</el-menu-item>
-          <el-menu-item index="/test2">系统信息</el-menu-item>
+          <el-menu-item index="/index/sysinfoshhow">系统信息</el-menu-item>
         </el-menu-item-group>
       </el-sub-menu>
     </el-menu>
