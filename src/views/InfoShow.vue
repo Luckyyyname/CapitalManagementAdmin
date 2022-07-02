@@ -14,7 +14,7 @@
                     </div>
                     <div class="user-item">
                         <i class="iconfont icon-shezhi"></i>
-                        <span>{{user.identity == 'manager' ? '管理员' : '普通员工'}}</span>
+                        <span>{{user.identity == 'manager' ? '管理员' : '用户'}}</span>
                     </div>
                 </div>
             </el-col>

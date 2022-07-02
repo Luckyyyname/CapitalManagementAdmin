@@ -12,6 +12,14 @@
       <el-form-item>
         <el-button type="primary" @click="handleSearch">查询</el-button>
       </el-form-item>
+      <el-form-item class="funSum">
+        <template v-if="activeName == 'income'">
+          总收入：<span style="color: #00d053">{{ fundSum }}</span>
+        </template>
+        <template v-else>
+          总支出：<span style="color: #f56767"> {{ fundSum }}</span>
+        </template>
+      </el-form-item>
     </el-form>
     <el-tabs v-model="activeName" @tab-click="handleClick">
       <el-tab-pane label="收入" name="income">
@@ -21,8 +29,8 @@
             <template v-slot="scope">
               <span>{{
                 scope.$index +
-                (paginations.income.page_index - 1) *
-                  paginations.income.page_size +
+                (paginations.data.page_index - 1) *
+                  paginations.data.page_size +
                 1
               }}</span>
             </template>
@@ -51,13 +59,13 @@
         <!-- pagination -->
         <div class="pagination">
           <el-pagination
-            v-model:currentPage="paginations.income.page_index"
-            v-model:page-size="paginations.income.page_size"
-            :page-sizes="paginations.income.page_sizes"
-            :layout="paginations.income.layout"
-            :total="paginations.income.total"
-            @size-change="handleIncomeSizeChange"
-            @current-change="handleIncomeCurrentChange"
+            v-model:currentPage="paginations.data.page_index"
+            v-model:page-size="paginations.data.page_size"
+            :page-sizes="paginations.data.page_sizes"
+            :layout="paginations.data.layout"
+            :total="paginations.data.total"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
           />
         </div>
       </el-tab-pane>
@@ -68,8 +76,8 @@
             <template v-slot="scope">
               <span>{{
                 scope.$index +
-                (paginations.expend.page_index - 1) *
-                  paginations.expend.page_size +
+                (paginations.data.page_index - 1) *
+                  paginations.data.page_size +
                 1
               }}</span>
             </template>
@@ -98,13 +106,13 @@
         <!-- pagination -->
         <div class="pagination">
           <el-pagination
-            v-model:currentPage="paginations.expend.page_index"
-            v-model:page-size="paginations.expend.page_size"
-            :page-sizes="paginations.expend.page_sizes"
-            :layout="paginations.expend.layout"
-            :total="paginations.expend.total"
-            @size-change="handleExpendSizeChange"
-            @current-change="handleExpendCurrentChange"
+            v-model:currentPage="paginations.data.page_index"
+            v-model:page-size="paginations.data.page_size"
+            :page-sizes="paginations.data.page_sizes"
+            :layout="paginations.data.layout"
+            :total="paginations.data.total"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
           />
         </div>
       </el-tab-pane>
@@ -113,7 +121,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, nextTick, onMounted } from "vue";
+import { ref, reactive, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 
@@ -128,20 +136,26 @@ const activeName = ref("income");
 const searchForm = reactive({
   month: "",
 });
+const fundSum = computed(() => {
+  let sum = 0;
+  if (activeName.value == "income") {
+    fileterTableData.value.forEach((item) => {
+      sum += item.income;
+    });
+  } else {
+    fileterTableData.value.forEach((item) => {
+      sum += item.expend;
+    });
+  }
+  return sum;
+});
 
 const tableData = ref([]);
 const allTableData = ref([]);
 const fileterTableData = ref([]);
 
 const paginations = reactive({
-  income: {
-    page_index: 1, //当前位于多少页
-    total: 0, //总数
-    page_size: 10, //一页显示多少条
-    page_sizes: [5, 10, 20], //每页显示多少条
-    layout: "total,sizes,prev,pager,next,jumper", // 翻页属性
-  },
-  expend: {
+  data: {
     page_index: 1, //当前位于多少页
     total: 0, //总数
     page_size: 10, //一页显示多少条
@@ -168,11 +182,7 @@ const getTableData = () => {
       return b[activeName.value] - a[activeName.value];
     });
     //设置分页数据
-    if (activeName.value === "income") {
-      setIncomePaginations();
-    } else {
-      setExpendPaginations();
-    }
+    setPaginations();
   });
 };
 
@@ -180,6 +190,14 @@ const getTableData = () => {
 const handleClick = () => {
   // 先清空table数据，不然数据会突然改变
   tableData.value = [];
+  // 清空分页器配置
+  paginations.data= {
+    page_index: 1, //当前位于多少页
+    total: 0, //总数
+    page_size: 10, //一页显示多少条
+    page_sizes: [5, 10, 20], //每页显示多少条
+    layout: "total,sizes,prev,pager,next,jumper", // 翻页属性
+  };
 
   getTableData();
 };
@@ -205,60 +223,36 @@ const formatDate = (time) => {
   return date;
 };
 
-const setIncomePaginations = () => {
-  paginations.income.total = fileterTableData.value.length;
-  paginations.income.page_index = 1;
-  paginations.income.page_size = 10;
+const setPaginations = () => {
+  paginations.data.total = fileterTableData.value.length;
+  paginations.data.page_index = 1;
+  paginations.data.page_size = 10;
   //设置默认分页数据
   tableData.value = fileterTableData.value.filter((item, index) => {
-    return index < paginations.income.page_size;
-  });
-};
-const setExpendPaginations = () => {
-  paginations.expend.total = fileterTableData.value.length;
-  paginations.expend.page_index = 1;
-  paginations.expend.page_size = 10;
-  //设置默认分页数据
-  tableData.value = fileterTableData.value.filter((item, index) => {
-    return index < paginations.expend.page_size;
+    return index < paginations.data.page_size;
   });
 };
 
-const handleIncomeSizeChange = (page_size) => {
-  paginations.income.page_index = 1;
-  paginations.income.page_size = page_size;
-  tableData.value = fileterTableData.value.filter((item, index) => {
-    return index < page_size;
-  });
-};
-const handleExpendSizeChange = (page_size) => {
-  paginations.expend.page_index = 1;
-  paginations.expend.page_size = page_size;
+const handleSizeChange = (page_size) => {
+  paginations.data.page_index = 1;
+  paginations.data.page_size = page_size;
   tableData.value = fileterTableData.value.filter((item, index) => {
     return index < page_size;
   });
 };
 
-const handleIncomeCurrentChange = (page) => {
+const handleCurrentChange = (page) => {
   //截取数1
-  let index = paginations.income.page_size * (page - 1);
+  let index = paginations.data.page_size * (page - 1);
   //截取数2
-  let nums = paginations.income.page_size * page;
-  tableData.value = fileterTableData.value.slice(index, nums);
-};
-const handleExpendCurrentChange = (page) => {
-  //截取数1
-  let index = paginations.expend.page_size * (page - 1);
-  //截取数2
-  let nums = paginations.expend.page_size * page;
+  let nums = paginations.data.page_size * page;
   tableData.value = fileterTableData.value.slice(index, nums);
 };
 </script>
 
 <style scoped>
-.fundlist-head {
-  margin-bottom: 20px;
-  margin-top: 10px;
+.funSum {
+  margin-left: 315px;
 }
 .pagination {
   float: right;

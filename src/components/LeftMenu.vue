@@ -20,9 +20,12 @@
           <el-icon><TrendCharts /></el-icon>
           <span>资金管理</span>
         </template>
-        <el-menu-item-group title="Group One">
+        <el-menu-item-group title="table">
           <el-menu-item index="/index/fundlist">资金流水</el-menu-item>
           <el-menu-item index="/index/fundstatistics">收支统计</el-menu-item>
+        </el-menu-item-group>
+        <el-menu-item-group title="chart">
+          <el-menu-item index="/index/fundchart">月净收入统计</el-menu-item>
         </el-menu-item-group>
       </el-sub-menu>
       <el-sub-menu index="2">
