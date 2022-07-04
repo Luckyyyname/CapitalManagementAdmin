@@ -1,13 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Index from '../views/Index.vue'
-import NotFound from '../views/404.vue'
-import Register from '../views/Register.vue'
-import Login from '../views/Login.vue'
-import Home from '../views/Home.vue'
-import InfoShow from '../views/InfoShow.vue'
-import FundList from '../views/FundList.vue'
-import FundStatistics from '../views/FundStatistics.vue'
-import FundChart from '../views/FundChart.vue'
 
 const routes = [
   {
@@ -17,35 +8,53 @@ const routes = [
   {
     path: '/index',
     name: 'index',
-    component: Index,
+    component: () => import('@/views/Index.vue'),
     children: [
-      { path: '', component: Home },
-      { path: 'home', name: 'home', component: Home },
-      { path: 'infoshow', name: 'infoshow', component: InfoShow },
-      { path: 'fundlist', name: 'fundlist', component: FundList },
-      { path: 'fundstatistics', name: 'fundstatistics', component: FundStatistics },
-      { path: 'fundchart', name: 'fundchart', component: FundChart },
+      {
+        path: '',
+        component: () => import('@/views/Home.vue')
+      },
+      {
+        path: 'home',
+        name: 'home',
+        component: () => import('@/views/Home.vue')
+      },
+      {
+        path: 'infoshow',
+        name: 'infoshow',
+        component: () => import('@/views/InfoShow.vue')
+      },
+      {
+        path: 'fundlist',
+        name: 'fundlist',
+        component: () => import('@/views/FundList.vue')
+      },
+      {
+        path: 'fundstatistics',
+        name: 'fundstatistics',
+        component: () => import('@/views/FundStatistics.vue')
+      },
+      {
+        path: 'fundchart',
+        name: 'fundchart',
+        component: () => import('@/views/FundChart')
+      },
     ],
   },
   {
     path: '/register',
     name: 'register',
-    component: Register,
+    component: () => import('@/views/Register.vue')
   },
   {
     path: '/login',
     name: 'login',
-    component: Login,
-  },
-  {
-    path: '/login',
-    name: 'login',
-    component: Login,
+    component: () => import('@/views/Login.vue')
   },
   {
     path: '/:catchAll(.*)',
     name: '/404',
-    component: NotFound
+    component: () => import('@/views/404.vue')
   },
 ]
 

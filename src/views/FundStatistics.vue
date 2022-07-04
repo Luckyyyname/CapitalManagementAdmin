@@ -29,8 +29,7 @@
             <template v-slot="scope">
               <span>{{
                 scope.$index +
-                (paginations.data.page_index - 1) *
-                  paginations.data.page_size +
+                (paginations.data.page_index - 1) * paginations.data.page_size +
                 1
               }}</span>
             </template>
@@ -76,8 +75,7 @@
             <template v-slot="scope">
               <span>{{
                 scope.$index +
-                (paginations.data.page_index - 1) *
-                  paginations.data.page_size +
+                (paginations.data.page_index - 1) * paginations.data.page_size +
                 1
               }}</span>
             </template>
@@ -127,6 +125,8 @@ import { useStore } from "vuex";
 
 // api
 import { getTableList } from "@/api/index";
+
+// import Worker from "worker-loader!@/workers/statisticsWorker";
 
 const router = useRouter();
 const store = useStore();
@@ -183,6 +183,14 @@ const getTableData = () => {
     });
     //设置分页数据
     setPaginations();
+
+    // const worker = new Worker();
+    // worker.postMessage({ datas: res.data, active: activeName.value });
+    // worker.onmessage = (e) => {
+    //   fileterTableData.value = e.data;
+    //   setPaginations();
+    //   worker.terminate();
+    // };
   });
 };
 
@@ -191,7 +199,7 @@ const handleClick = () => {
   // 先清空table数据，不然数据会突然改变
   tableData.value = [];
   // 清空分页器配置
-  paginations.data= {
+  paginations.data = {
     page_index: 1, //当前位于多少页
     total: 0, //总数
     page_size: 10, //一页显示多少条

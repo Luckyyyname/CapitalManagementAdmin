@@ -21,7 +21,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from "vue";
+import { ref, reactive, onMounted, computed } from "vue";
 import { ElMessage } from "element-plus";
 // api
 import { getTableList } from "@/api/index";
@@ -29,13 +29,19 @@ import { getTableList } from "@/api/index";
 import * as echarts from "echarts";
 let echart = echarts;
 
+import Worker from "worker-loader!@/workers/chartWorker";
+
+const computedNum = computed(()=>{
+  return chartData.value;
+})
+
 const searchForm = reactive({
   year: new Date().getFullYear().toString(),
 });
 
 // echarts配置
 const isFirstRender = ref(true);
-const chartData = reactive([]);
+const chartData = ref([]);
 const options = reactive({
   xAxis: {
     type: "category",
@@ -62,12 +68,22 @@ const options = reactive({
   },
   series: [
     {
-      data: chartData,
+      data: computedNum,
       type: "line",
       smooth: true,
     },
   ],
 });
+
+const openWorker = (paramObj) => {
+  const worker = new Worker();
+  worker.postMessage(paramObj);
+  worker.onmessage = (e) => {
+    chartData.value = e.data;
+    renderChart();
+    worker.terminate();
+  };
+};
 
 onMounted(() => {
   // 默认获取
@@ -91,26 +107,8 @@ const getChartData = () => {
   getTableList()
     .then((res) => {
       chartData.length = 0;
-      for (let i = 1; i < 13; i++) {
-        if (i < 10) {
-          i = "0" + i;
-        }
-        // 当月净收入
-        let sum = 0;
-        // 计算当年每月净收入
-        res.data.forEach((item) => {
-          if (item.date.startsWith(`${searchForm.year}-${i}`)) {
-            sum += item.income;
-            sum -= item.expend;
-          }
-        });
-        chartData.push(sum);
-        sum = 0;
-      }
+      openWorker({ datas: res.data, year: searchForm.year });
     })
-    .then(() => {
-      renderChart();
-    });
 };
 
 // 年份搜索

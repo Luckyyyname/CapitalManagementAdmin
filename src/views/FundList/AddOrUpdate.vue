@@ -3,6 +3,7 @@
     <el-dialog
       v-model="dataFormVisible"
       :title="dataForm.data._id ? '编辑' : '新增'"
+      :before-close="handleClose"
     >
       <el-form
         ref="dataFormRef"
@@ -41,7 +42,7 @@
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="dataFormVisible = false">关闭</el-button>
+          <el-button @click="handleNotSaveClose">关闭</el-button>
           <el-button type="primary" @click="handleCommit(dataFormRef)"
             >确认</el-button
           >
@@ -64,18 +65,20 @@ const props = defineProps(["formData"]);
 const emit = defineEmits(["refreshList"]);
 
 const dataForm = reactive({
-    data:{},
+  data: {},
 });
 const dataFormRules = reactive({
   type: [
     {
       required: true,
+      message: "收支类型不能为空",
       trigger: "blur",
     },
   ],
   describe: [
     {
       required: true,
+      message: "收支描述不能为空",
       trigger: "blur",
     },
   ],
@@ -106,9 +109,32 @@ const dataFormRules = reactive({
 
 const init = () => {
   dataFormVisible.value = true;
-
-  dataForm.data = props.formData.data;
+  console.log(props.formData.data._id);
+  // 新增窗口且localStorage里有saveForm
+  if (props.formData.data._id == undefined && localStorage.saveForm) {
+    // 从localstorage里读数据赋值
+    dataForm.data = JSON.parse(localStorage.getItem("saveForm"));
+  } else {
+    dataForm.data = props.formData.data;
+  }
   const { data } = toRefs(dataForm);
+};
+
+// 窗口关闭且非提交操作
+const handleClose = () => {
+  // 新增窗口 自动存储数据至localStorage
+  if (!dataForm.data._id) {
+    localStorage.setItem("saveForm", JSON.stringify(dataForm.data));
+  }
+
+  dataFormVisible.value = false;
+};
+const handleNotSaveClose = () => {
+  // 清除localStorage
+  if (localStorage.saveForm && !dataForm.data._id) {
+    localStorage.removeItem("saveForm");
+  }
+  dataFormVisible.value = false;
 };
 
 // 提交
@@ -141,10 +167,13 @@ const handleCommit = async (formEl) => {
             type: "success",
           });
 
+          // 清除localStorage
+          if (localStorage.saveForm) {
+            localStorage.removeItem("saveForm");
+          }
         });
       } else {
         // 编辑
-        console.log(dataForm.data)
         editData(dataForm.data._id, dataForm.data).then(() => {
           // 关闭弹窗
           dataFormVisible.value = false;
@@ -155,7 +184,6 @@ const handleCommit = async (formEl) => {
             message: "操作成功",
             type: "success",
           });
-
         });
       }
     }
