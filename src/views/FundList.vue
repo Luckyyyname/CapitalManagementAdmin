@@ -124,7 +124,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, nextTick, onMounted } from "vue";
+import { ref, reactive, computed, nextTick } from "vue";
 import { getCurrentInstance } from "@vue/runtime-core";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
@@ -188,11 +188,6 @@ const paginations = reactive({
 });
 
 const formData = reactive({});
-
-onMounted(() => {
-  // 默认获取
-  getTableData();
-});
 
 // 获取table数据
 const getTableData = () => {
@@ -308,6 +303,8 @@ const handleCurrentChange = (page) => {
   let nums = paginations.data.page_size * page;
   tableData.value = allTableData.value.slice(index, nums);
 };
+
+getTableData();
 </script>
 
 <style scoped>

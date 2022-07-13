@@ -21,7 +21,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from "vue";
+import { ref, reactive, computed, onBeforeUnmount } from "vue";
 import { ElMessage } from "element-plus";
 // api
 import { getTableList } from "@/api/index";
@@ -31,9 +31,9 @@ let echart = echarts;
 
 import Worker from "worker-loader!@/workers/chartWorker";
 
-const computedNum = computed(()=>{
+const computedNum = computed(() => {
   return chartData.value;
-})
+});
 
 const searchForm = reactive({
   year: new Date().getFullYear().toString(),
@@ -85,11 +85,6 @@ const openWorker = (paramObj) => {
   };
 };
 
-onMounted(() => {
-  // 默认获取
-  getChartData();
-});
-
 // echarts渲染
 let chart = {};
 const renderChart = () => {
@@ -104,11 +99,10 @@ const renderChart = () => {
 
 // 获取chart数据
 const getChartData = () => {
-  getTableList()
-    .then((res) => {
-      chartData.length = 0;
-      openWorker({ datas: res.data, year: searchForm.year });
-    })
+  getTableList().then((res) => {
+    chartData.length = 0;
+    openWorker({ datas: res.data, year: searchForm.year });
+  });
 };
 
 // 年份搜索
@@ -123,6 +117,12 @@ const handleSearch = () => {
   }
   getChartData();
 };
+
+getChartData();
+
+onBeforeUnmount(() => {
+  chart.clear();
+});
 </script>
 
 <style scoped>

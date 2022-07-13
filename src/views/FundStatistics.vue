@@ -164,10 +164,10 @@ const paginations = reactive({
   },
 });
 
-onMounted(() => {
-  // 默认获取
-  getTableData();
-});
+// onMounted(() => {
+//   // 默认获取
+//   getTableData();
+// });
 
 // 获取table数据
 const getTableData = () => {
@@ -188,6 +188,7 @@ const getTableData = () => {
     // worker.postMessage({ datas: res.data, active: activeName.value });
     // worker.onmessage = (e) => {
     //   fileterTableData.value = e.data;
+    //   console.log(fileterTableData.value)
     //   setPaginations();
     //   worker.terminate();
     // };
@@ -256,6 +257,8 @@ const handleCurrentChange = (page) => {
   let nums = paginations.data.page_size * page;
   tableData.value = fileterTableData.value.slice(index, nums);
 };
+
+getTableData();
 </script>
 
 <style scoped>
