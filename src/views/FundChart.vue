@@ -3,11 +3,11 @@
     <!-- 查询 -->
     <el-form :inline="true" :model="searchForm">
       <el-form-item label="查询年份：">
-        <el-date-picker
-          v-model="searchForm.year"
-          type="year"
-          placeholder="选择年份"
-          value-format="YYYY"
+        <el-date-picker 
+        v-model="searchForm.year"
+        type="year" 
+        placeholder="选择年份" 
+        value-format="YYYY" 
         />
       </el-form-item>
       <el-form-item>
@@ -21,15 +21,14 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onBeforeUnmount } from "vue";
+import { ref, reactive, computed, onBeforeUnmount, onActivated } from "vue";
 import { ElMessage } from "element-plus";
+import Worker from "worker-loader!@/workers/chartWorker";
 // api
 import { getTableList } from "@/api/index";
 //echarts
 import * as echarts from "echarts";
 let echart = echarts;
-
-import Worker from "worker-loader!@/workers/chartWorker";
 
 const computedNum = computed(() => {
   return chartData.value;
@@ -118,7 +117,11 @@ const handleSearch = () => {
   getChartData();
 };
 
-getChartData();
+// getChartData();
+onActivated(() => {
+  console.log('onActivated-chart');
+  getChartData();
+})
 
 onBeforeUnmount(() => {
   chart.clear();
@@ -129,6 +132,7 @@ onBeforeUnmount(() => {
 .funSum {
   margin-left: 315px;
 }
+
 .pagination {
   float: right;
   margin-top: 10px;

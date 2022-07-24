@@ -119,7 +119,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from "vue";
+import { ref, reactive, computed, onActivated } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 
@@ -258,7 +258,11 @@ const handleCurrentChange = (page) => {
   tableData.value = fileterTableData.value.slice(index, nums);
 };
 
-getTableData();
+// getTableData();
+onActivated(() => {
+  console.log('onActivated-statistics');
+  getTableData();
+})
 </script>
 
 <style scoped>

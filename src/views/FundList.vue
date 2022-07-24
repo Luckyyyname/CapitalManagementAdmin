@@ -124,7 +124,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, nextTick } from "vue";
+import { ref, reactive, computed, nextTick, onActivated } from "vue";
 import { getCurrentInstance } from "@vue/runtime-core";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
@@ -304,7 +304,11 @@ const handleCurrentChange = (page) => {
   tableData.value = allTableData.value.slice(index, nums);
 };
 
-getTableData();
+// getTableData();
+onActivated(() => {
+  console.log('onActivated-list');
+  getTableData();
+})
 </script>
 
 <style scoped>
@@ -312,6 +316,7 @@ getTableData();
   margin-bottom: 20px;
   margin-top: 10px;
 }
+
 .pagination {
   float: right;
   margin-top: 10px;
