@@ -16,8 +16,8 @@ const endLoading = () => {
 }
 
 const instance = axios.create({
-    baseURL: 'http://localhost:5000',
-    timeout: 5000,
+    baseURL: 'http://localhost:4000',
+    timeout: 4000,
 })
 // 请求拦截
 instance.interceptors.request.use(config => {

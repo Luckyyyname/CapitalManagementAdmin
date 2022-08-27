@@ -27,7 +27,7 @@
             </el-form-item>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="handleSearch()">查询</el-button>
+            <el-button type="primary" v-debounce="{ fn: handleSearch, event: 'click', delay: 200 }">查询</el-button>
           </el-form-item>
         </el-form>
       </el-col>
@@ -40,7 +40,7 @@
     <el-table :data="tableData" stripe style="width: 100%">
       <el-table-column type="index" label="序号" align="center" width="60">
         <template v-slot="scope">
-          <span>{{ scope.$index+(paginations.data.page_index - 1) * paginations.data.page_size + 1 }}</span>
+          <span>{{ scope.$index + (paginations.data.page_index - 1) * paginations.data.page_size + 1 }}</span>
         </template>
       </el-table-column>
       <el-table-column prop="date" label="创建时间" align="center" width="175">
@@ -306,7 +306,6 @@ const handleCurrentChange = (page) => {
 
 // getTableData();
 onActivated(() => {
-  console.log('onActivated-list');
   getTableData();
 })
 </script>

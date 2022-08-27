@@ -1,7 +1,7 @@
 <template>
   <header class="head-nav">
     <el-row>
-      <el-col :span="16" class="logo-container">
+      <el-col :span="16" class="logo-container" v-once>
         <img src="../assets/logo.png" class="logo" alt="logo" />
         <span class="title">米修在线后台管理系统</span>
       </el-col>

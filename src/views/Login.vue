@@ -17,16 +17,21 @@
             ></el-input>
           </el-form-item>
           <el-form-item label="密码" prop="password">
-            <el-input
-              type="password"
-              v-model="loginUser.password"
-              placeholder="请输入密码"
-            ></el-input>
+            <el-input type="password" v-model="loginUser.password" placeholder="请输入密码"></el-input>
+          </el-form-item>
+          <el-form-item label="验证码" prop="verify">
+            <el-row>
+              <el-col :span="12">
+                <el-input v-model="verifyInput" placeholder="请输入验证码"></el-input>
+              </el-col>
+              <el-col :span="12">
+                <img-verify ref="verifyRef"></img-verify>
+              </el-col>
+            </el-row>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" class="submit_btn" @click="submitForm"
-              >登录</el-button
-            >
+            <el-button type="primary" class="submit_btn" v-debounce="{ fn: submitForm, event: 'click', delay: 200 }">登录
+            </el-button>
           </el-form-item>
           <div class="tiparea">
             <p>
@@ -46,6 +51,7 @@ import { useStore } from "vuex";
 import { ElMessage } from "element-plus";
 import jwt_decode from "jwt-decode";
 import { loginSubmit } from "@/api/user";
+import ImgVerify from "@/components/ImgVerify.vue";
 
 const router = useRouter();
 const store = useStore();
@@ -55,6 +61,10 @@ const loginUser = reactive({
   email: "",
   password: "",
 });
+
+const verifyRef = ref(null);
+const verifyInput = ref("");
+
 const rules = reactive({
   email: [
     {
@@ -91,6 +101,14 @@ const isEmpty = (value) => {
 const submitForm = () => {
   loginForm.value.validate(async (isvalid) => {
     if (isvalid) {
+      if (verifyInput.value.toLowerCase() !== verifyRef.value.imgCode.toLowerCase()) {
+        ElMessage({
+          type: "error",
+          message: "请正确填写验证码",
+          showClose: true,
+        });
+        return false;
+      }
       loginSubmit(loginUser).then((res) => {
         // 从res.data里获取token存储到localStorage
         const { token } = res.data;

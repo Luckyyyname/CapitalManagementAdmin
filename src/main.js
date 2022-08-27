@@ -5,6 +5,12 @@ import 'element-plus/dist/index.css'
 import router from './router'
 import store from './store'
 
+import debounce from './directives/debounce'
+import buried from './directives/buried'
 
-createApp(App).use(ElementPlus).use(store).use(router).mount('#app')
+const app = createApp(App);
 
+app.directive('debounce',debounce);
+app.directive('buried', buried);
+
+app.use(ElementPlus).use(store).use(router).mount('#app')

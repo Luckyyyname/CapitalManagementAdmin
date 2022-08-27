@@ -119,7 +119,6 @@ const handleSearch = () => {
 
 // getChartData();
 onActivated(() => {
-  console.log('onActivated-chart');
   getChartData();
 })
 
