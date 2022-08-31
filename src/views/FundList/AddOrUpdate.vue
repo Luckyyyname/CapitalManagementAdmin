@@ -1,51 +1,30 @@
 <template>
   <div>
-    <el-dialog
-      v-model="dataFormVisible"
-      :title="dataForm.data._id ? '编辑' : '新增'"
-      :before-close="handleClose"
-    >
-      <el-form
-        ref="dataFormRef"
-        :model="dataForm.data"
-        :rules="dataFormRules"
-        label-width="100px"
-      >
-        <el-form-item label="收支类型：" prop="type">
+    <el-dialog v-model="dataFormVisible" :title="title" :before-close="handleClose">
+      <el-form ref="dataFormRef" :model="dataForm.data" :rules="dataFormRules" label-width="100px">
+        <el-form-item :label="$t('fundstatistics.type')" prop="type">
           <el-input v-model="dataForm.data.type" maxlength="12" clearable />
         </el-form-item>
-        <el-form-item label="收支描述：" prop="describe">
-          <el-input
-            v-model="dataForm.data.describe"
-            :rows="2"
-            type="textarea"
-            clearable
-          />
+        <el-form-item :label="$t('fundstatistics.des')" prop="describe">
+          <el-input v-model="dataForm.data.describe" :rows="2" type="textarea" clearable />
         </el-form-item>
-        <el-form-item label="收入：" prop="income">
+        <el-form-item :label="$t('fundstatistics.income')" prop="income">
           <el-input-number v-model.number="dataForm.data.income" />
         </el-form-item>
-        <el-form-item label="支出：" prop="expend">
+        <el-form-item :label="$t('fundstatistics.expend')" prop="expend">
           <el-input-number v-model.number="dataForm.data.expend" />
         </el-form-item>
-        <el-form-item label="账户现金：" prop="cash">
+        <el-form-item :label="$t('fundlist.cash')" prop="cash">
           <el-input-number v-model.number="dataForm.data.cash" />
         </el-form-item>
-        <el-form-item label="备注：" prop="remark">
-          <el-input
-            v-model="dataForm.data.remark"
-            :rows="2"
-            type="textarea"
-            clearable
-          />
+        <el-form-item :label="$t('fundstatistics.remark')" prop="remark">
+          <el-input v-model="dataForm.data.remark" :rows="2" type="textarea" clearable />
         </el-form-item>
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="handleNotSaveClose">关闭</el-button>
-          <el-button type="primary" @click="handleCommit(dataFormRef)"
-            >确认</el-button
-          >
+          <el-button @click="handleNotSaveClose">{{ $t('fundlist.close') }}</el-button>
+          <el-button type="primary" @click="handleCommit(dataFormRef)">{{ $t('fundlist.confirm') }}</el-button>
         </span>
       </template>
     </el-dialog>
@@ -54,9 +33,14 @@
 
 
 <script setup>
-import { reactive, ref, unref, toRefs } from "vue";
+import { reactive, ref, computed, toRefs } from "vue";
 import { ElMessage } from "element-plus";
 import { addData, editData } from "@/api/index";
+
+// i18n
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const dataFormVisible = ref(false);
 const dataFormRef = ref("");
@@ -67,18 +51,21 @@ const emit = defineEmits(["refreshList"]);
 const dataForm = reactive({
   data: {},
 });
+const title = computed(() => {
+  return dataForm.id ? t("fundlist.edit") : t("fundlist.new")
+})
 const dataFormRules = reactive({
   type: [
     {
       required: true,
-      message: "收支类型不能为空",
+      message: t("fundlist.typeerr"),
       trigger: "blur",
     },
   ],
   describe: [
     {
       required: true,
-      message: "收支描述不能为空",
+      message: t("fundlist.deserr"),
       trigger: "blur",
     },
   ],
@@ -109,7 +96,6 @@ const dataFormRules = reactive({
 
 const init = () => {
   dataFormVisible.value = true;
-  console.log(props.formData.data._id);
   // 新增窗口且localStorage里有saveForm
   if (props.formData.data._id == undefined && localStorage.saveForm) {
     // 从localstorage里读数据赋值
@@ -163,7 +149,7 @@ const handleCommit = async (formEl) => {
           emit("refreshList");
 
           ElMessage({
-            message: "操作成功",
+            message: t("fundlist.success"),
             type: "success",
           });
 
@@ -181,7 +167,7 @@ const handleCommit = async (formEl) => {
           emit("refreshList");
 
           ElMessage({
-            message: "操作成功",
+            message: t("fundlist.success"),
             type: "success",
           });
         });

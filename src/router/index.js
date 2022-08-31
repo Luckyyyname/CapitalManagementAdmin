@@ -4,10 +4,6 @@ import { submitTrigger } from "@/api/trigger";
 const routes = [
   {
     path: '/',
-    redirect: '/index',
-  },
-  {
-    path: '/index',
     name: 'index',
     component: () => import('@/views/Index.vue'),
     children: [

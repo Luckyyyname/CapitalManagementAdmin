@@ -1,117 +1,104 @@
 <template>
   <div class="fundstatistics">
     <el-form :inline="true" :model="searchForm">
-      <el-form-item label="查询月份：">
-        <el-date-picker
-          v-model="searchForm.month"
-          type="month"
-          placeholder="选择月份"
-          value-format="YYYY-MM"
-        />
+      <el-form-item :label="$t('fundstatistics.smonth')">
+        <el-date-picker v-model="searchForm.month" type="month" :placeholder="$t('fundstatistics.pmonth')"
+          value-format="YYYY-MM" />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="handleSearch">查询</el-button>
+        <el-button type="primary" @click="handleSearch" v-buried="{ type: 'search', event: 'click' }">
+          {{ $t('fundchart.search') }}</el-button>
       </el-form-item>
       <el-form-item class="funSum">
         <template v-if="activeName == 'income'">
-          总收入：<span style="color: #00d053">{{ fundSum }}</span>
+          {{ $t('fundstatistics.sincome') }}<span style="color: #00d053">{{ fundSum }}</span>
         </template>
         <template v-else>
-          总支出：<span style="color: #f56767"> {{ fundSum }}</span>
+          {{ $t('fundstatistics.sexpend') }}<span style="color: #f56767"> {{ fundSum }}</span>
         </template>
       </el-form-item>
     </el-form>
     <el-tabs v-model="activeName" @tab-click="handleClick">
-      <el-tab-pane label="收入" name="income">
+      <el-tab-pane :label="$t('fundstatistics.income')" name="income">
         <!-- table表 -->
         <el-table :data="tableData" stripe style="width: 100%">
-          <el-table-column type="index" label="序号" align="center" width="60">
+          <el-table-column type="index" :label="$t('fundstatistics.index')" align="center" width="60">
             <template v-slot="scope">
               <span>{{
-                scope.$index +
-                (paginations.data.page_index - 1) * paginations.data.page_size +
-                1
+                  scope.$index +
+                  (paginations.data.page_index - 1) * paginations.data.page_size +
+                  1
               }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="date" label="创建时间" align="center">
+          <el-table-column prop="date" :label="$t('fundstatistics.date')" align="center">
             <template v-slot="scope">
               <i class="el-icon-time"></i>
               <span style="margin-left: 10px">{{
-                formatDate(scope.row.date)
+                  formatDate(scope.row.date)
               }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="type" label="收支类型" align="center">
+          <el-table-column prop="type" :label="$t('fundstatistics.type')" align="center">
           </el-table-column>
-          <el-table-column prop="describe" label="收支描述" align="center">
+          <el-table-column prop="describe" :label="$t('fundstatistics.des')" align="center">
           </el-table-column>
-          <el-table-column prop="income" label="收入" align="center">
+          <el-table-column prop="income" :label="$t('fundstatistics.income')" align="center">
             <template v-slot="scope">
               <span style="color: #00d053">{{ scope.row.income }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="remark" label="备注" align="center">
+          <el-table-column prop="remark" :label="$t('fundstatistics.remark')" align="center">
           </el-table-column>
         </el-table>
 
         <!-- pagination -->
         <div class="pagination">
-          <el-pagination
-            v-model:currentPage="paginations.data.page_index"
-            v-model:page-size="paginations.data.page_size"
-            :page-sizes="paginations.data.page_sizes"
-            :layout="paginations.data.layout"
-            :total="paginations.data.total"
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-          />
+          <el-pagination v-model:currentPage="paginations.data.page_index"
+            v-model:page-size="paginations.data.page_size" :page-sizes="paginations.data.page_sizes"
+            :layout="paginations.data.layout" :total="paginations.data.total" @size-change="handleSizeChange"
+            @current-change="handleCurrentChange" />
         </div>
       </el-tab-pane>
-      <el-tab-pane label="支出" name="expend">
+      <el-tab-pane :label="$t('fundstatistics.expend')" name="expend">
         <!-- table表 -->
         <el-table :data="tableData" stripe style="width: 100%">
-          <el-table-column type="index" label="序号" align="center" width="60">
+          <el-table-column type="index" :label="$t('fundstatistics.index')" align="center" width="60">
             <template v-slot="scope">
               <span>{{
-                scope.$index +
-                (paginations.data.page_index - 1) * paginations.data.page_size +
-                1
+                  scope.$index +
+                  (paginations.data.page_index - 1) * paginations.data.page_size +
+                  1
               }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="date" label="创建时间" align="center">
+          <el-table-column prop="date" :label="$t('fundstatistics.date')" align="center">
             <template v-slot="scope">
               <i class="el-icon-time"></i>
               <span style="margin-left: 10px">{{
-                formatDate(scope.row.date)
+                  formatDate(scope.row.date)
               }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="type" label="收支类型" align="center">
+          <el-table-column prop="type" :label="$t('fundstatistics.type')" align="center">
           </el-table-column>
-          <el-table-column prop="describe" label="收支描述" align="center">
+          <el-table-column prop="describe" :label="$t('fundstatistics.des')" align="center">
           </el-table-column>
-          <el-table-column prop="expend" label="支出" align="center">
+          <el-table-column prop="expend" :label="$t('fundstatistics.expend')" align="center">
             <template v-slot="scope">
               <span style="color: #f56767">{{ scope.row.expend }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="remark" label="备注" align="center">
+          <el-table-column prop="remark" :label="$t('fundstatistics.remark')" align="center">
           </el-table-column>
         </el-table>
 
         <!-- pagination -->
         <div class="pagination">
-          <el-pagination
-            v-model:currentPage="paginations.data.page_index"
-            v-model:page-size="paginations.data.page_size"
-            :page-sizes="paginations.data.page_sizes"
-            :layout="paginations.data.layout"
-            :total="paginations.data.total"
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-          />
+          <el-pagination v-model:currentPage="paginations.data.page_index"
+            v-model:page-size="paginations.data.page_size" :page-sizes="paginations.data.page_sizes"
+            :layout="paginations.data.layout" :total="paginations.data.total" @size-change="handleSizeChange"
+            @current-change="handleCurrentChange" />
         </div>
       </el-tab-pane>
     </el-tabs>
@@ -260,7 +247,6 @@ const handleCurrentChange = (page) => {
 
 // getTableData();
 onActivated(() => {
-  console.log('onActivated-statistics');
   getTableData();
 })
 </script>
@@ -269,6 +255,7 @@ onActivated(() => {
 .funSum {
   margin-left: 315px;
 }
+
 .pagination {
   float: right;
   margin-top: 10px;

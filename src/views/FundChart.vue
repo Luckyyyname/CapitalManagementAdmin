@@ -2,16 +2,12 @@
   <div class="fundstatistics">
     <!-- 查询 -->
     <el-form :inline="true" :model="searchForm">
-      <el-form-item label="查询年份：">
-        <el-date-picker 
-        v-model="searchForm.year"
-        type="year" 
-        placeholder="选择年份" 
-        value-format="YYYY" 
-        />
+      <el-form-item :label="$t('fundchart.syear')">
+        <el-date-picker v-model="searchForm.year" type="year" :placeholder="$t('fundchart.pyear')"
+          value-format="YYYY" />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="handleSearch">查询</el-button>
+        <el-button type="primary" @click="handleSearch">{{ $t('fundchart.search') }}</el-button>
       </el-form-item>
     </el-form>
 
@@ -21,14 +17,18 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onBeforeUnmount, onActivated } from "vue";
+import { ref, reactive, computed, onBeforeUnmount, onActivated, onDeactivated } from "vue";
 import { ElMessage } from "element-plus";
 import Worker from "worker-loader!@/workers/chartWorker";
 // api
 import { getTableList } from "@/api/index";
 //echarts
 import * as echarts from "echarts";
+import { useI18n } from 'vue-i18n'
+
 let echart = echarts;
+const { t } = useI18n()
+
 
 const computedNum = computed(() => {
   return chartData.value;
@@ -45,18 +45,18 @@ const options = reactive({
   xAxis: {
     type: "category",
     data: [
-      "一月",
-      "二月",
-      "三月",
-      "四月",
-      "五月",
-      "六月",
-      "七月",
-      "八月",
-      "九月",
-      "十月",
-      "十一月",
-      "十二月",
+      t("fundchart.ju"),
+      t("fundchart.fe"),
+      t("fundchart.may"),
+      t("fundchart.ap"),
+      t("fundchart.ma"),
+      t("fundchart.jun"),
+      t("fundchart.jul"),
+      t("fundchart.ag"),
+      t("fundchart.sp"),
+      t("fundchart.oc"),
+      t("fundchart.no"),
+      t("fundchart.de"),
     ],
   },
   tooltip: {
@@ -109,7 +109,7 @@ const handleSearch = () => {
   if (!searchForm.year) {
     // 消息提示
     ElMessage({
-      message: "查询年份不能为空",
+      message: t("fundchart.yearerr"),
       type: "error",
     });
     searchForm.year = new Date().getFullYear().toString();
@@ -122,9 +122,9 @@ onActivated(() => {
   getChartData();
 })
 
-onBeforeUnmount(() => {
-  chart.clear();
-});
+// onDeactivated(() => {
+//   chart.clear();
+// });
 </script>
 
 <style scoped>

@@ -2,50 +2,28 @@
   <div class="register">
     <section class="form_container">
       <div class="manage_tip">
-        <span class="title">米修在线后台管理系统</span>
-        <el-form
-          ref="registerForm"
-          :model="registerUser"
-          :rules="rules"
-          label-width="80px"
-          class="registerForm"
-        >
-          <el-form-item label="用户名" prop="name">
-            <el-input
-              v-model="registerUser.name"
-              placeholder="请输入用户名"
-            ></el-input>
+        <span class="title">{{ $t('register.title') }}</span>
+        <el-form ref="registerForm" :model="registerUser" :rules="rules" label-width="80px" class="registerForm">
+          <el-form-item :label="$t('register.userLabel')" prop="name">
+            <el-input v-model="registerUser.name" :placeholder="$t('register.userHolder')"></el-input>
           </el-form-item>
-          <el-form-item label="邮箱" prop="email">
-            <el-input
-              v-model="registerUser.email"
-              placeholder="请输入email"
-            ></el-input>
+          <el-form-item :label="$t('register.emailLabel')" prop="email">
+            <el-input v-model="registerUser.email" :placeholder="$t('register.emailHolder')"></el-input>
           </el-form-item>
-          <el-form-item label="密码" prop="password">
-            <el-input
-              type="password"
-              v-model="registerUser.password"
-              placeholder="请输入密码"
-            ></el-input>
+          <el-form-item :label="$t('register.passwordLabel')" prop="password">
+            <el-input type="password" v-model="registerUser.password" :placeholder="$t('register.passwordHolder')"></el-input>
           </el-form-item>
-          <el-form-item label="确认密码" prop="passwordRepeated">
-            <el-input
-              type="password"
-              v-model="registerUser.passwordRepeated"
-              placeholder="请再次输入密码"
-            ></el-input>
+          <el-form-item :label="$t('register.repeatedLabel')" prop="passwordRepeated">
+            <el-input type="password" v-model="registerUser.passwordRepeated" :placeholder="$t('register.repeatedHolder')"></el-input>
           </el-form-item>
-          <el-form-item label="选择身份">
-            <el-select v-model="registerUser.identity" placeholder="请选择身份">
-              <el-option label="管理员" value="manager"></el-option>
-              <el-option label="员工" value="emplyee"></el-option>
+          <el-form-item :label="$t('register.identityLabel')">
+            <el-select v-model="registerUser.identity" :placeholder="$t('register.identityHolder')">
+              <el-option :label="$t('register.managerLabel')" value="manager"></el-option>
+              <el-option :label="$t('register.emplyeeLabel')" value="emplyee"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" class="submit_btn" @click="submitForm"
-              >注册</el-button
-            >
+            <el-button type="primary" class="submit_btn" @click="submitForm">{{ $t('register.register')}}</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -58,11 +36,13 @@ import { ref, reactive } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 import { registerSubmit } from '@/api/user'
+import { useI18n } from 'vue-i18n'
+const { t } = useI18n()
 
 // 校验两次密码输入是否一致
 const validatePasswordRepeated = (rule, value, callback) => {
   if (value !== registerUser.password) {
-    callback(new Error("两次输入密码不一致!"));
+    callback(new Error(t("register.repeatedError")));
   } else {
     callback();
   }
@@ -81,13 +61,13 @@ const rules = reactive({
   name: [
     {
       required: true,
-      message: "用户名不能为空",
+      message: t("register.userNotNull"),
       trigger: "blur",
     },
     {
       min: 2,
       max: 30,
-      message: "长度在2-30个字符之间",
+      message: t("register.ulengthErr"),
       trigger: "blur",
     },
   ],
@@ -95,33 +75,27 @@ const rules = reactive({
     {
       type: "email",
       required: true,
-      message: "邮箱格式不正确",
+      message: t("register.emailErr"),
       trigger: "blur",
     },
   ],
   password: [
     {
       required: true,
-      message: "密码不能为空",
+      message: t("register.passwordNotNull"),
       trigger: "blur",
     },
     {
       min: 6,
       max: 30,
-      message: "长度在6-30之间",
+      message: t("register.plengthErr"),
       trigger: "blur",
     },
   ],
   passwordRepeated: [
     {
       required: true,
-      message: "密码不能为空",
-      trigger: "blur",
-    },
-    {
-      min: 6,
-      max: 30,
-      message: "长度在6-30之间",
+      message: t("register.reapeatedNotNull"),
       trigger: "blur",
     },
     {
@@ -135,17 +109,17 @@ const submitForm = () => {
   registerForm.value.validate(async (isvalid) => {
     if (isvalid) {
       registerSubmit(registerUser)
-      .then(() => {
-        ElMessage({
-          message: "注册成功",
-          type: "success",
-        });
-      router.push("/login");
-      })
+        .then(() => {
+          ElMessage({
+            message: t("register.success"),
+            type: "success",
+          });
+          router.push("/login");
+        })
     } else {
       ElMessage({
         type: "error",
-        message: "请正确填写登录信息",
+        message: t("register.err"),
         showClose: true,
       });
       return false;
@@ -162,6 +136,7 @@ const submitForm = () => {
   background: url(../assets/bg.jpg) no-repeat center center;
   background-size: 100% 100%;
 }
+
 .form_container {
   width: 370px;
   height: 210px;
@@ -172,12 +147,14 @@ const submitForm = () => {
   border-radius: 5px;
   text-align: center;
 }
+
 .form_container .manage_tip .title {
   font-family: "Microsoft YaHei";
   font-weight: bold;
   font-size: 26px;
   color: #fff;
 }
+
 .registerForm {
   margin-top: 20px;
   background-color: #fff;
@@ -185,6 +162,7 @@ const submitForm = () => {
   border-radius: 5px;
   box-shadow: 0px 5px 10px #cccc;
 }
+
 .submit_btn {
   width: 100%;
 }
